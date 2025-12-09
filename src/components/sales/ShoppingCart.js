@@ -53,7 +53,9 @@ const ShoppingCart = ({
       </div>
 
       <button 
-        onClick={onProcesarVenta}
+        onClick={() => {
+          if (!procesando) onProcesarVenta();
+        }}
         disabled={procesando || carrito.length === 0}
         style={{
           width: '100%',
@@ -70,7 +72,8 @@ const ShoppingCart = ({
       >
         {procesando ? '⏳ Procesando...' : '✅ Finalizar Venta'}
       </button>
-    </div>
+
+    </div>  
   );
 };
 

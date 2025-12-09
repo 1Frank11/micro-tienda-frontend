@@ -24,19 +24,25 @@ export const useSales = () => {
     
     if (productoEnCarrito) {
       if (productoEnCarrito.cantidad >= producto.stock) {
+        alert('❌ No hay más stock disponible para este producto');
         return false;
       }
+
       setCarrito(carrito.map(item => 
         item.id === producto.id 
           ? { ...item, cantidad: item.cantidad + 1 }
           : item
       ));
+
     } else {
       if (producto.stock < 1) {
+        alert('❌ Producto sin stock');
         return false;
       }
+
       setCarrito([...carrito, { ...producto, cantidad: 1 }]);
     }
+
     return true;
   };
 
@@ -55,16 +61,14 @@ export const useSales = () => {
     try {
       const saleData = {
         items: carrito.map(item => ({
-          id: item.id,
-          cantidad: item.cantidad,
-          precio: item.precio 
+          producto_id: item.id,
+          cantidad: item.cantidad
         })),
         metodo_pago: metodoPago
       };
 
       const response = await salesService.createSale(saleData);
       
-     
       setCarrito([]);
       setModoVenta(false);
       return { success: true, data: response };
@@ -75,6 +79,7 @@ export const useSales = () => {
       setProcesando(false);
     }
   };
+
 
   return {
     modoVenta,
