@@ -16,12 +16,26 @@ const LoginPage = () => {
     setLoginLoading(true);
     setLoginError('');
 
-    const result = await login(username, password);
-    
-    if (!result.success) {
-      setLoginError(result.error);
+    try {
+      const result = await login(username, password);
+
+      // ✅ CORRECCIÓN CLAVE: tu backend devuelve TOKEN, no "success"
+      if (!result || !result.token) {
+        setLoginError(result?.error || "Credenciales incorrectas");
+        setLoginLoading(false);
+        return;
+      }
+
+      // ✅ GUARDAR TOKEN (ESTO ES LO QUE FALTABA EN PRODUCCIÓN)
+      localStorage.setItem("token", result.token);
+
+      // ✅ Redirección forzada tras login exitoso
+      window.location.href = "/";
+
+    } catch (error) {
+      setLoginError("Error al conectar con el servidor");
     }
-    
+
     setLoginLoading(false);
   };
 
