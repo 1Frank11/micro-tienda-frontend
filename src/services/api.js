@@ -3,7 +3,7 @@ import axios from "axios";
 /* ===============================
    CONFIGURACIÓN BASE
 ================================ */
-const API_BASE_URL = "https://tienda-backend-tl20.onrender.com";
+const API_BASE_URL = "https://tienda-backend-t120.onrender.com"; // ✅ CORREGIDO
 
 /* ===============================
    FETCH WRAPPER CON TOKEN
@@ -102,7 +102,7 @@ export const userService = {
 };
 
 /* ===============================
-   REPORTES (UNO SOLO)
+   REPORTES
 ================================ */
 const API_REPORTES = `${API_BASE_URL}/api/reportes`;
 
@@ -121,21 +121,21 @@ export const reportService = {
   getSaleDetails: (ventaId) => 
     apiRequest(`/api/reportes/venta/${ventaId}`),
 
-  // ✅ EXPORTAR A EXCEL (BLOB REAL)
-exportExcel: async (filtros) => {
+  // ✅ EXPORTAR A EXCEL (YA SIN LOCALHOST)
+  exportExcel: async (filtros) => {
     return axios.get(
-      "http://localhost:3001/api/reportes/exportar-excel",
+      `${API_BASE_URL}/api/reportes/exportar-excel`, // ✅ CORREGIDO
       {
         params: filtros,
-        responseType: "blob", // OBLIGATORIO
+        responseType: "blob",
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`
         }
       }
     )
-    }
-  
+  }
 };
+
 /* ===============================
    SISTEMA
 ================================ */
