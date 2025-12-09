@@ -3,7 +3,7 @@ import axios from "axios";
 /* ===============================
    CONFIGURACIÓN BASE
 ================================ */
-const API_BASE_URL = "https://tienda-backend-t120.onrender.com";
+const API_BASE_URL = "https://tienda-backend-tl20.onrender.com";
 
 /* ===============================
    FETCH WRAPPER CON TOKEN
@@ -124,7 +124,7 @@ export const reportService = {
   // ✅ EXPORTAR A EXCEL (BLOB REAL)
 exportExcel: async (filtros) => {
     return axios.get(
-  "https://tienda-backend-t120.onrender.com/api/reportes/exportar-excel", 
+  "https://tienda-backend-tl20.onrender.com/api/reportes/exportar-excel", 
       {
         params: filtros,
         responseType: "blob", // OBLIGATORIO
