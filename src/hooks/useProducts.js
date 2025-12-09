@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { productService } from '../services/api';
 
 export const useProducts = () => {
   const [productos, setProductos] = useState([]);
@@ -6,105 +7,58 @@ export const useProducts = () => {
   const [error, setError] = useState('');
 
   const cargarProductos = async () => {
-    try {
-      setLoading(true);
-      setError('');
-      const token = localStorage.getItem('token');
-      const response = await fetch('/api/productos', {
-        method: 'GET',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        }
-      });
+  try {
+    setLoading(true);
+    setError('');
+    const response = await productService.getProducts(); // GET al backend real
+    const productosFormateados = response.data.map(p => ({
+      ...p,
+      precio: Number(p.precio) || 0
+    }));
+    setProductos(productosFormateados);
+  } catch (err) {
+    setError('Error: ' + err.message);
+  } finally {
+    setLoading(false);
+  }
+};
 
-      if (!response.ok) throw new Error('Error al cargar productos');
-      
-      const data = await response.json();
-      
-      if (data.success) {
-        const productosFormateados = data.data.map(producto => ({
-          ...producto,
-          precio: Number(producto.precio) || 0
-        }));
-        setProductos(productosFormateados);
-      }
-    } catch (error) {
-      setError('Error: ' + error.message);
-    } finally {
-      setLoading(false);
-    }
-  };
+const buscarProductos = async (criterio, valor) => {
+  if (!valor.trim()) { setError('Ingresa un término de búsqueda'); return; }
+  try {
+    setLoading(true);
+    setError('');
+    const response = await productService.searchProducts(criterio, valor);
+    const productosFormateados = response.resultados.map(p => ({
+      ...p,
+      precio: Number(p.precio) || 0
+    }));
+    setProductos(productosFormateados);
+    if (response.resultados.length === 0) setError('No se encontraron productos');
+  } catch (err) {
+    setError('Error al buscar productos');
+  } finally {
+    setLoading(false);
+  }
+};
 
-  const buscarProductos = async (criterio, valor) => {
-    if (!valor.trim()) {
-      setError('Ingresa un término de búsqueda');
-      return;
-    }
-
-    try {
-      setLoading(true);
-      setError('');
-      const token = localStorage.getItem('token');
-      const response = await fetch(`/api/productos/buscar?criterio=${criterio}&valor=${valor}`, {
-        method: 'GET',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        }
-      });
-
-      const data = await response.json();
-      
-      if (data.success) {
-        const productosFormateados = data.resultados.map(producto => ({
-          ...producto,
-          precio: Number(producto.precio) || 0
-        }));
-        setProductos(productosFormateados);
-        if (data.resultados.length === 0) {
-          setError('No se encontraron productos');
-        }
-      }
-    } catch (error) {
-      setError('Error al buscar productos');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const verStockBajo = async () => {
-    try {
-      setLoading(true);
-      setError('');
-      const token = localStorage.getItem('token');
-      const response = await fetch('/api/productos/stock-bajo', {
-        method: 'GET',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        }
-      });
-
-      const data = await response.json();
-      
-      if (data.success) {
-        const productosFormateados = data.alertas.map(producto => ({
-          ...producto,
-          precio: Number(producto.precio) || 0
-        }));
-        setProductos(productosFormateados);
-        
-        if (data.alertas.length === 0) {
-          setError('✅ No hay productos con stock bajo');
-        }
-      }
-    } catch (error) {
-      setError('Error al cargar stock bajo');
-    } finally {
-      setLoading(false);
-    }
-  };
+const verStockBajo = async () => {
+  try {
+    setLoading(true);
+    setError('');
+    const response = await productService.getLowStock();
+    const productosFormateados = response.alertas.map(p => ({
+      ...p,
+      precio: Number(p.precio) || 0
+    }));
+    setProductos(productosFormateados);
+    if (response.alertas.length === 0) setError('No hay productos con stock bajo');
+  } catch (err) {
+    setError('Error al cargar stock bajo');
+  } finally {
+    setLoading(false);
+  }
+};
 
   return {
     productos,
