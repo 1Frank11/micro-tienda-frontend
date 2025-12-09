@@ -3,7 +3,7 @@ import axios from "axios";
 /* ===============================
    CONFIGURACIÓN BASE
 ================================ */
-const API_BASE_URL = "http://localhost:3001";
+const API_BASE_URL = "https://tienda-backend-tl20.onrender.com";
 
 /* ===============================
    FETCH WRAPPER CON TOKEN
